@@ -2,7 +2,7 @@ let numOfProjects = 0;
 
 const getNumOfProjects = () => numOfProjects;
 
-const createProject = (title, description) => {
+const createProject = (title) => {
     let id = numOfProjects;
     numOfProjects++;
 
@@ -11,16 +11,11 @@ const createProject = (title, description) => {
     // Getter 
     const getId = () => id;
     const getTitle = () => title; 
-    const getDescription = () => description;
     const getToDos = () => toDos;
 
     // Setter
     const setTitle = (newTitle) => {
         title = newTitle;
-    } 
-
-    const setDescription = (newDescription) => {
-        description = newDescription;
     } 
 
     // Object methods
@@ -33,10 +28,8 @@ const createProject = (title, description) => {
                 toDos, 
                 getId, 
                 getTitle, 
-                getDescription, 
                 getToDos, 
                 setTitle,
-                setDescription,
                 addToDo };
 }
 

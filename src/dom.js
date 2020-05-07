@@ -1,98 +1,121 @@
 const createDom = () => {
-    const leftCol = document.querySelector("#left-col");
-    const mainContent = document.querySelector("#main-content");
+    const projectsView  = document.querySelector("#projects-view");
+    const toDosView     = document.querySelector("#todos-view");
+    const toDoView      = document.querySelector("#todo-view");
 
-    const showClickedToDo = (dataManager) => {
-        const lis = document.querySelectorAll(".to-do");
-        lis.forEach( (li) => {
-            li.addEventListener("click", (e) => {
-                let toDo = dataManager.findToDo(Number(e.target.dataset.todoId));
-                let container = createToDoView(toDo);
-                clearMainContent();
-                mainContent.appendChild(container);
+    // General methods
+    const resetView = (view) => {
+        while(view.firstChild) {
+            view.removeChild(view.lastChild);
+        }
+    }
+
+    // Populate a todo view
+    const showToDo = (dataManager) => {
+        const toDosDom = document.querySelectorAll(".todo-preview, .todo-preview-title, time");
+
+        toDosDom.forEach( (toDoDom) => {
+            toDoDom.addEventListener("click", (e) => {;
+                if(e.target !== e.currentTarget) return;
+
+                resetView(toDoView);
+                let toDo = dataManager.findToDo(e.target.dataset.todoId);
+                let container = createContainerForToDo(toDo);
+                toDoView.appendChild(container);
             })
         })
     }
 
-    const clearMainContent = () => {
-        while (mainContent.firstChild) {
-            mainContent.removeChild(mainContent.lastChild);
-        }
-    }
+    const createContainerForToDo = (toDo) => {
+        let container = document.createElement("div");
+        container.classList.add("todo");
+        let div = createContainerForToDoListItem(toDo);
+        div.classList.add("todo-header");
 
-    const createToDoView = (toDo) => {
-        let container   = document.createElement("div");
-        let title       = document.createElement("h1");
         let description = document.createElement("p");
-        let dueDate     = document.createElement("p");
-        let checked     = document.createElement("p");
-        let ul          = document.createElement("ul");
-
-        container.classList.add("todo-view");
-        title.textContent = toDo.getTitle();
         description.textContent = toDo.getDescription();
-        dueDate.textContent = "Due date: " + toDo.getDueDate();
-        checked.textContent = toDo.getChecked();
+        description.classList.add("description");
+
+        let ul = document.createElement("ul");
+        ul.classList.add("notes");
+
         toDo.getNotes().forEach( (note) => {
             let li = document.createElement("li");
             li.textContent = note.getText();
             ul.appendChild(li);
-        }); 
+        })
 
-        container.append(
-            title, 
-            description,
-            dueDate,
-            checked,
-            ul);
-
+        container.append(div, description, ul);
         return container;
     }
 
-    // Fill out left column
-    const fillLeftColumn = (projects) => {
+
+    // Populate a project's todos view
+    const showToDosOfClickedProject = (dataManager, callback) => {
+        const projectsDom = document.querySelectorAll(".project");
+
+        projectsDom.forEach ( (projectDom) => {
+            projectDom.addEventListener("click", (e) => {
+                resetView(toDosView);
+                resetView(toDoView);
+                let project = dataManager.findProject(e.target.dataset.projectId);
+
+                project.getToDos().forEach( (toDo) => {
+                    let container = createContainerForToDoListItem(toDo);
+                    toDosView.appendChild(container);
+                })
+                callback(dataManager);
+            });
+        });
+    };
+
+    const createContainerForToDoListItem = (toDo) => {
+        let div = document.createElement("div");
+        div.classList.add("todo-preview");
+        div.dataset.todoId = toDo.getId();
+
+        let title = document.createElement("h3");
+        title.classList.add("todo-preview-title");
+        title.textContent = toDo.getTitle();
+        title.dataset.todoId = toDo.getId();
+
+        let dueTo = document.createElement("time");
+        dueTo.textContent = toDo.getDueDate();    
+        dueTo.dataset.todoId = toDo.getId();
+        
+        let button = document.createElement("button");
+        button.classList.add("delete");
+        button.textContent = "Delete";
+
+        let checkBox        = document.createElement("input");
+        checkBox.type       = "checkbox";
+        checkBox.classList.add("checkBox");
+
+        div.append(checkBox, title, dueTo, button);
+        return div;
+    }
+
+    // Populate projects view
+    const showProjects = (projects) => {
         projects.forEach( (project) => {
-            leftCol.appendChild(createContainerForProject(project));
+            projectsView.appendChild(createContainerForProject(project));
         })
     }
 
     const createContainerForProject = (project) => {
         const container = document.createElement("div");
-        const title     = document.createElement("h1");
-        const ul = createUlForToDos(project.getToDos());
+        const title     = document.createElement("h3");
         
-        // Interesting question: Is it better to "getTitle()" here, or to add "projectTitle" as an argument?
         title.textContent = project.getTitle();         
-        title.classList.add("title");
+        title.classList.add("project");
+        title.dataset.projectId = project.getId();
         container.classList.add("project-left");
         
         container.appendChild(title);
-        container.appendChild(ul);
         return container;
     }
 
-    const createUlForToDos = (toDos) => {
-        const ul = document.createElement("ul");
-
-        toDos.forEach( (toDo) => {
-            let li = createLiForToDo(toDo);
-            ul.appendChild(li);
-        });
-
-        return ul;
-    }
-
-    const createLiForToDo = (toDo) => {
-        let li = document.createElement("li");
-        li.classList.add("to-do");
-        li.dataset.projectId = toDo.getProjectId();
-        li.dataset.todoId = toDo.getId();
-        li.textContent = toDo.getTitle();
-
-        return li;
-    };
-
-    return { fillLeftColumn, showClickedToDo };
+    return { showProjects, showToDosOfClickedProject, showToDo };
 };
 
 export { createDom };

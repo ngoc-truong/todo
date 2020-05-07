@@ -50,9 +50,8 @@ const createDataManager = () => {
     }
 
     const addNewProjectToProjects = () => {
-            let myProject = createProject("", "");
+            let myProject = createProject("");
             myProject.setTitle(`Projectname ${myProject.getId()}`);
-            myProject.setDescription(`Beschreibung meines Projektes ${myProject.getId()}`);
             projects.push(myProject);
     }
 

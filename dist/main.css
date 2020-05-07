@@ -1,5 +1,17 @@
+:root {
+    --font:#979494;
+    --todo-preview: green;
+}
+
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0px;
+    color: var(--font);
+}
+
+h1, h2, h3 {
+    font-weight: 700;
 }
 
 h1 {
@@ -7,8 +19,22 @@ h1 {
     margin: 0.2em 0;
 }
 
+h2 {
+    font-size: 1.6em;
+    margin: 0.1em 0;
+}
+
+h3 {
+    font-size: 1.4em;
+    margin: 0.1em 0;
+}
+
+p, li {
+    font-weight: 400;
+}
+
 p {
-    font-size: 1.2em;
+    font-size: 1em;
     margin: 0.5em 0;
 }
 
@@ -16,25 +42,81 @@ li {
     padding: 0.5em 1em;
 }
 
+/* Projects */
 .project-left {
     margin: 2em;
 }
 
-.todo-view {
+/* ToDo preview*/
+.todo-preview {
     margin: 2em;
+    padding: 1em 1em 0em 0em;
+    box-shadow: 0 3px 15px rgba(0,0,0,.07);
+    display: grid;
+    grid-template-columns: 1fr 4fr 1fr;
+    grid-template-rows: 1fr 1fr;
 }
+
+.checkBox {
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+}
+
+time, .todo-preview-title{
+    grid-column: 2 / 3;
+}
+
+.todo-preview-title{
+    grid-row: 1 / 2;
+}
+
+time {
+    grid-row: 2 / 3;
+}
+
+.delete {
+    grid-column: 3 / 4;
+    grid-row: 1 / 2;
+}
+
+/* To Do view */
+.todo {
+    margin: 2em 2em 2em 0;
+    display: grid;
+    grid-template-columns: 1fr 4fr 1fr;
+    box-shadow: 0 3px 15px rgba(0,0,0,.07);
+}
+
+.todo-header {
+    box-shadow: none;
+    grid-column: 1 / 4;
+    margin: 0em;
+}
+
+.description, .notes {
+    grid-column: 2 / 3;
+}
+
+.notes {
+    margin-bottom: 1em;
+}
+
 
 #content {
     display: grid;
-    grid-template-columns: 2fr 8fr;
+    grid-template-columns: 2fr 4fr 4fr;
 }
 
-#left-col {
+#projects-view {
     grid-column: 1 / 2;
 }
 
-#main-content {
+#todos-view {
     grid-column: 2 / 3;
+}
+
+#todo-view {
+    grid-column: 3 / 4;
 }
 
 .to-do {
