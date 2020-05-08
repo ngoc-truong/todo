@@ -31,52 +31,44 @@ const createDataManager = () => {
     // Create data
     const createSampleData = (numOfProjects, numOfToDos, numOfNotes) => {
         for (let i = 0; i < numOfProjects; i++) {
-            addNewProjectToProjects();
+            addProjectToProjects("Project " + i);
         }
 
         projects.forEach( (project) => {
             for (let i = 0; i < numOfToDos; i++) {
-                addOneToDoTo(project);
+                addToDoToProject(project, `ToDo number ${i}.`, `This is my random description`, '2020');
             }
         })
 
         projects.forEach ( (project) => {
             project.getToDos().forEach( (toDo) => {
                 for (let i = 0; i < numOfNotes; i++) {
-                    addOneNoteTo(toDo);
+                    addNoteToToDo(toDo, `This is the note number ${i}.`);
                 }
             })
         })
     }
 
-    const addNewProjectWithTitle = (title) => {
-        let myProject = createProject(title);
+    const addProjectToProjects = (projectTitle) => {
+        let myProject = createProject(projectTitle);
         projects.push(myProject);
     }
 
-    const addNewProjectToProjects = () => {
-            let myProject = createProject("");
-            myProject.setTitle(`Projectname ${myProject.getId()}`);
-            projects.push(myProject);
-    }
-
-    const addOneToDoTo = (project) => {
-        let toDo = createToDo("", "", `10-2020`);
-        toDo.setTitle(`ToDo ${toDo.getId()} in project ${project.getId()}`)
-        toDo.setDescription(`This is my toDo number ${toDo.getId()} in my project ${project.getId()}: ${project.getTitle()}`);
+    const addToDoToProject = (project, title, description, dueDate) => {
+        let toDo = createToDo(title, description, dueDate);
+        toDo.setTitle("My ToDo-Id is " + toDo.getId());
         toDos.push(toDo);
         project.addToDo(toDo);
     }
 
-    const addOneNoteTo = (toDo) => {
-        let note = createNote("");
-        note.setText(`This is my note number ${note.getId()} for my todo ${toDo.getId()}`);
+    const addNoteToToDo = (toDo, text) => {
+        let note = createNote(text);
         notes.push(note);
         toDo.addNote(note);
     }
 
-    return {    createSampleData, 
-                addNewProjectWithTitle,  
+    return {    createSampleData,   
+                addProjectToProjects,
                 getProjects,
                 getToDos,
                 getNotes,

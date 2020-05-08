@@ -13,8 +13,10 @@ let myData = createDataManager();
 myData.createSampleData(3, 3, 2);
 projects = myData.getProjects();
 
+
 // Dom
+
 let myDom = createDom();
 myDom.showProjects(projects);
-myDom.showToDosOfClickedProject(myData, myDom.showToDo);
 myDom.addNewProject(myData);
+myDom.showToDosOfClickedProject(myData, myDom.showToDo);

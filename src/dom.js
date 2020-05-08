@@ -1,9 +1,10 @@
 const createDom = () => {
-    const projectsView      = document.querySelector("#projects-view");
+    const projectsView      = document.querySelector("#projects");
     const toDosView         = document.querySelector("#todos-view");
     const toDoView          = document.querySelector("#todo-view");
     const newProjectButton  = document.querySelector("#new-project-button");
     const newProjectInput   = document.querySelector("#new-project");
+    const addToDoForm       = document.querySelector("#add-todo-form");
 
     // General methods
     const resetView = (view) => {
@@ -62,7 +63,11 @@ const createDom = () => {
             projectDom.addEventListener("click", (e) => {
                 resetView(toDosView);
                 resetView(toDoView);
+                resetView(addToDoForm);
+
                 let project = dataManager.findProject(e.target.dataset.projectId);
+
+                addToDoForm.appendChild(createContainerForToDoForm(project));
 
                 project.getToDos().forEach( (toDo) => {
                     let container = createContainerForToDoListItem(toDo);
@@ -72,6 +77,75 @@ const createDom = () => {
             });
         });
     };
+
+    const createContainerForToDoForm = (project) => {
+        // ToDo-Title input field
+        let titleP = document.createElement("p");
+        let titleInput = document.createElement("input");
+        titleInput.setAttribute("type", "text");
+        titleInput.setAttribute("name", "todo-title");
+        titleInput.setAttribute("id", "todo-title");
+
+        let titleLabel = document.createElement("label");
+        titleLabel.textContent = "Title";
+        titleLabel.htmlFor = "todo-title";
+
+        titleP.append(titleLabel, titleInput);
+        
+
+        // ToDo-Description input field
+        let descriptionP = document.createElement("p");
+        let descriptionInput = document.createElement("input");
+        descriptionInput.setAttribute("type", "text");
+        descriptionInput.setAttribute("name", "todo-description");
+        descriptionInput.setAttribute("id", "todo-description");
+
+        let descriptionLabel = document.createElement("label");
+        descriptionLabel.textContent = "Description";
+        descriptionLabel.htmlFor = "todo-description";
+
+        descriptionP.append(descriptionLabel, descriptionInput);
+
+
+        // ToDo-DueDate input field
+        let dateP = document.createElement("p");
+        let dateInput = document.createElement("input");
+        dateInput.setAttribute("type", "date");
+        dateInput.setAttribute("name", "todo-date");
+        dateInput.setAttribute("id", "todo-date");
+
+        let dateLabel = document.createElement("label");
+        dateLabel.textContent = "Due date";
+        dateLabel.htmlFor = "todo-date";
+
+        dateP.append(dateLabel, dateInput);
+
+        // ToDo-Project input field
+        let projectsSelector = document.createElement("select")
+        projectsSelector.id = "projects-selector";
+        projectsSelector.setAttribute("name", "projects-selector");
+
+        projectsView.childNodes.forEach( (node) => {
+            let option = document.createElement("option");
+            option.value = node.textContent;
+            option.textContent = option.value;
+            if (option.value === project.getTitle()) {
+                option.setAttribute("selected", true);
+            }
+            projectsSelector.appendChild(option);
+        })
+
+        // Submit button
+        let submit = document.createElement("button");
+        submit.setAttribute("id", "add-todo-button");
+        submit.textContent = "Add new todo";
+
+        // Container
+        let container = document.createElement("div");
+        container.append(titleP, descriptionP, dateP, projectsSelector, submit);
+
+        return container;
+    }
 
     const createContainerForToDoListItem = (toDo) => {
         let div = document.createElement("div");
@@ -104,8 +178,10 @@ const createDom = () => {
     // Adding new project
     const addNewProject = (dataManager) => {
         newProjectButton.addEventListener("click", (e) => {
-            dataManager.addNewProjectWithTitle(newProjectInput.value);
+            dataManager.addProjectToProjects(newProjectInput.value);
+            resetView(projectsView);
             showProjects(dataManager.getProjects());
+            showToDosOfClickedProject(dataManager, showToDo);
         })
     }
 
