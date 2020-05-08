@@ -1,7 +1,9 @@
 const createDom = () => {
-    const projectsView  = document.querySelector("#projects-view");
-    const toDosView     = document.querySelector("#todos-view");
-    const toDoView      = document.querySelector("#todo-view");
+    const projectsView      = document.querySelector("#projects-view");
+    const toDosView         = document.querySelector("#todos-view");
+    const toDoView          = document.querySelector("#todo-view");
+    const newProjectButton  = document.querySelector("#new-project-button");
+    const newProjectInput   = document.querySelector("#new-project");
 
     // General methods
     const resetView = (view) => {
@@ -9,6 +11,8 @@ const createDom = () => {
             view.removeChild(view.lastChild);
         }
     }
+
+
 
     // Populate a todo view
     const showToDo = (dataManager) => {
@@ -50,7 +54,7 @@ const createDom = () => {
     }
 
 
-    // Populate a project's todos view
+    // Populate a project's todos preview
     const showToDosOfClickedProject = (dataManager, callback) => {
         const projectsDom = document.querySelectorAll(".project");
 
@@ -96,6 +100,16 @@ const createDom = () => {
     }
 
     // Populate projects view
+
+    // Adding new project
+    const addNewProject = (dataManager) => {
+        newProjectButton.addEventListener("click", (e) => {
+            dataManager.addNewProjectWithTitle(newProjectInput.value);
+            showProjects(dataManager.getProjects());
+        })
+    }
+
+
     const showProjects = (projects) => {
         projects.forEach( (project) => {
             projectsView.appendChild(createContainerForProject(project));
@@ -115,7 +129,7 @@ const createDom = () => {
         return container;
     }
 
-    return { showProjects, showToDosOfClickedProject, showToDo };
+    return { showProjects, addNewProject, showToDosOfClickedProject, showToDo };
 };
 
 export { createDom };

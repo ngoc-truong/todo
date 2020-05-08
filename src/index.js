@@ -17,3 +17,4 @@ projects = myData.getProjects();
 let myDom = createDom();
 myDom.showProjects(projects);
 myDom.showToDosOfClickedProject(myData, myDom.showToDo);
+myDom.addNewProject(myData);

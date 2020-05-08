@@ -49,6 +49,11 @@ const createDataManager = () => {
         })
     }
 
+    const addNewProjectWithTitle = (title) => {
+        let myProject = createProject(title);
+        projects.push(myProject);
+    }
+
     const addNewProjectToProjects = () => {
             let myProject = createProject("");
             myProject.setTitle(`Projectname ${myProject.getId()}`);
@@ -70,7 +75,8 @@ const createDataManager = () => {
         toDo.addNote(note);
     }
 
-    return {    createSampleData,   
+    return {    createSampleData, 
+                addNewProjectWithTitle,  
                 getProjects,
                 getToDos,
                 getNotes,
