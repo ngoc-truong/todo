@@ -56,7 +56,7 @@ const createDataManager = () => {
 
     const addToDoToProject = (project, title, description, dueDate) => {
         let toDo = createToDo(title, description, dueDate);
-        toDo.setTitle("My ToDo-Id is " + toDo.getId());
+        //toDo.setTitle("My ToDo-Id is " + toDo.getId());
         toDos.push(toDo);
         project.addToDo(toDo);
     }
@@ -69,6 +69,8 @@ const createDataManager = () => {
 
     return {    createSampleData,   
                 addProjectToProjects,
+                addToDoToProject,
+                addNoteToToDo, 
                 getProjects,
                 getToDos,
                 getNotes,
