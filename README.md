@@ -12,4 +12,4 @@ This small project is a basic todo-app. In this project I practiced the relation
 - The user can check and uncheck their todos
 
 ## Challenges
-- The most difficult part was to connect the relationships 
+- The most difficult part was to connect the relationships between the data and the dom (e.g. "a project has many todos").
