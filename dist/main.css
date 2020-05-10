@@ -1,12 +1,16 @@
 :root {
-    --font:#979494;
-    --todo-preview: green;
+    --font:#355C7D;
+    --todo-preview:#6C5B7B;
+    --logo: rgb(238, 139, 97);
+    --highlight1: rgb(243, 224, 215);
+    --highlight2: #F67280;
+    --highlight3: #C06C84;
 }
 
 body {
     font-family: 'Nunito Sans', sans-serif;
     font-weight: 400;
-    letter-spacing: 0px;
+    letter-spacing: 1px;
     color: var(--font);
 }
 
@@ -35,26 +39,114 @@ p, li {
 
 p {
     font-size: 1em;
-    margin: 0.5em 0;
 }
 
 li {
     padding: 0.5em 1em;
 }
 
+
+/* Nav */
+nav {
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: var(--highlight1);
+    height: 50px;
+    font-size: 1.5em;
+    font-weight: 700;
+    line-height: 50px;
+    padding: 0 2em;
+    color: var(--logo);
+}
+
+/* Main content */
+#content {
+    display: grid;
+    grid-template-columns: 2fr 4fr 4fr;
+    margin-top: 5em;
+    padding: 0 3em;
+}
+
+#projects-view {
+    grid-column: 1 / 2;
+}
+
+#todos-view {
+    grid-column: 2 / 3;
+}
+
+#todo-view {
+    grid-column: 3 / 4;
+}
+
+
 /* Projects */
+#left-col {
+    padding: 0 2em 0 0 ;
+}
+
+.add-form {
+    display: grid;
+    grid-template-columns: 6fr 1fr;
+    margin-bottom: 2em;
+}
+
+.new-label{
+    grid-column: 1 / 2;
+    width: 100%;
+}
+
+.new-input {
+    grid-column: 1 / 2;
+    grid-row: 2;
+    width: 100%;
+}
+
+.new-button {
+    grid-column: 2 / 3;
+    grid-row: 2;
+}
+
 .project-left {
-    margin: 2em;
+    display: grid;
+    grid-template-columns: 6fr 1fr;
+    margin-bottom: 1em;
 }
 
 /* ToDo preview*/
+#main {
+    width: 80%;
+    margin: 0 auto;
+}
+
+#add-todo-form {
+    margin: 0 auto 3em auto;
+}
+
+.input-field {
+    display: grid;
+    grid-template-rows: 0.5fr 1fr;
+    margin-bottom: 1em;
+}
+
+label {
+    grid-row: 1 / 2;
+}
+
+input {
+    grid-row: 2 / 3;
+}
+
+
 .todo-preview {
-    margin: 2em;
-    padding: 1em 1em 0em 0em;
     box-shadow: 0 3px 15px rgba(0,0,0,.07);
     display: grid;
     grid-template-columns: 1fr 4fr 1fr;
     grid-template-rows: 1fr 1fr;
+    padding: 1em 1em 0em 1em;
+    margin-bottom: 2em;
 }
 
 .checkBox {
@@ -80,49 +172,32 @@ time {
 }
 
 /* To Do view */
+
 .todo {
-    margin: 2em 2em 2em 0;
-    display: grid;
-    grid-template-columns: 1fr 4fr 1fr;
     box-shadow: 0 3px 15px rgba(0,0,0,.07);
+    padding: 2em;
+}
+
+.description {
+    padding-bottom: 1em;
 }
 
 .todo-header {
-    box-shadow: none;
-    grid-column: 1 / 4;
-    margin: 0em;
+    padding-bottom: 1em;
 }
 
-.description, .notes {
-    grid-column: 2 / 3;
+.todo-title {
+    padding-bottom: 1em;
 }
 
 .notes {
-    margin-bottom: 1em;
-}
-
-
-#content {
+    padding-bottom: 1em;
     display: grid;
-    grid-template-columns: 2fr 4fr 4fr;
+    grid-template-columns: 10fr 1fr;
 }
 
-#projects-view {
-    grid-column: 1 / 2;
-}
-
-#todos-view {
-    grid-column: 2 / 3;
-}
-
-#todo-view {
-    grid-column: 3 / 4;
-}
-
-.to-do {
-    cursor: pointer;
-}
-
-.checked {
-    background-color: rosybrown;
+button {
+    border: none;
+    background: var(--highlight1);
+    font-size: 1.2em;
 }

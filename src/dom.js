@@ -3,8 +3,10 @@ const createDom = () => {
     const toDosView         = document.querySelector("#todos-view");
     const toDoView          = document.querySelector("#todo-view");
     const newProjectButton  = document.querySelector("#new-project-button");
-    const newProjectInput   = document.querySelector("#new-project");
+    const newProjectInput   = document.querySelector("#new-project-input");
     const addToDoForm       = document.querySelector("#add-todo-form");
+    const deleteSymbol      = "🗑";
+    const addSymbol         = "+";
 
     // General methods
     const resetView = (view) => {
@@ -92,39 +94,50 @@ const createDom = () => {
 
     const createContainerForNoteForm = (toDo) => {
         let container = document.createElement("div");
+        container.classList.add("add-form");
 
         // Note-text input field
-        let noteP      = document.createElement("p");
         let noteInput  = document.createElement("input");
         noteInput.setAttribute("type", "text");
         noteInput.setAttribute("name", "note-text");
         noteInput.setAttribute("id", "note-text");
+        noteInput.classList.add("new-input");
         noteInput.dataset.todoId = toDo.getId();
 
         let noteLabel = document.createElement("label");
-        noteLabel.textContent = "Note text";
+        noteLabel.textContent = "New Note";
         noteLabel.htmlFor = "note-text";
+        noteLabel.classList.add("new-label");
 
-        noteP.append(noteLabel, noteInput);
 
         // Submit button
         let submit = document.createElement("button");
         submit.setAttribute("id", "add-note-button");
-        submit.textContent = "New note";
+        submit.classList.add("new-button");
+        submit.textContent = addSymbol;
 
-        container.append(noteP, submit);
+        container.append(noteLabel, noteInput, submit);
         return container;
     }
 
     const createContainerForToDo = (toDo) => {
         let container = document.createElement("div");
         container.classList.add("todo");
-        let div = createContainerForToDoListItem(toDo);
+
+        let div = document.createElement("div");
         div.classList.add("todo-header");
+        div.dataset.todoId = toDo.getId();
 
-        // Removing checkbox
-        div.removeChild(div.firstChild);
+        let title = document.createElement("h3");
+        title.classList.add("todo-preview-title");
+        title.classList.add("todo-title");
+        title.textContent = toDo.getTitle();
+        title.dataset.todoId = toDo.getId();
 
+        let dueTo = document.createElement("time");
+        dueTo.textContent = toDo.getDueDate();    
+        dueTo.dataset.todoId = toDo.getId();
+        
         let description = document.createElement("p");
         description.textContent = toDo.getDescription();
         description.classList.add("description");
@@ -138,13 +151,14 @@ const createDom = () => {
             li.dataset.noteId = note.getId();
 
             let button = document.createElement("button");
-            button.textContent = "Delete note";
+            button.textContent = deleteSymbol;
             button.classList.add("delete-note");
             button.dataset.noteId = note.getId();
 
             ul.append(li, button);
         })
 
+        div.append(title, dueTo);
         container.append(div, description, ul);
         return container;
     }
@@ -218,54 +232,49 @@ const createDom = () => {
     const createContainerForToDoForm = (project) => {
         // ToDo-Title input field
         let titleP = document.createElement("p");
+        titleP.classList.add("input-field");
         let titleInput = document.createElement("input");
         titleInput.setAttribute("type", "text");
         titleInput.setAttribute("name", "todo-title");
         titleInput.setAttribute("id", "todo-title");
-
         let titleLabel = document.createElement("label");
         titleLabel.textContent = "Title";
         titleLabel.htmlFor = "todo-title";
-
         titleP.append(titleLabel, titleInput);
         
         // ToDo-Description input field
         let descriptionP = document.createElement("p");
+        descriptionP.classList.add("input-field");
         let descriptionInput = document.createElement("input");
         descriptionInput.setAttribute("type", "textarea");
         descriptionInput.setAttribute("name", "todo-description");
         descriptionInput.setAttribute("id", "todo-description");
-
         let descriptionLabel = document.createElement("label");
         descriptionLabel.textContent = "Description";
         descriptionLabel.htmlFor = "todo-description";
-
         descriptionP.append(descriptionLabel, descriptionInput);
 
         // ToDo-DueDate input field
         let dateP = document.createElement("p");
+        dateP.classList.add("input-field");
         let dateInput = document.createElement("input");
         dateInput.setAttribute("type", "date");
         dateInput.setAttribute("name", "todo-date");
         dateInput.setAttribute("id", "todo-date");
-
         let dateLabel = document.createElement("label");
-        dateLabel.textContent = "Due date";
+        dateLabel.textContent = "Due Date";
         dateLabel.htmlFor = "todo-date";
-
         dateP.append(dateLabel, dateInput);
 
         // ToDo-Project input field
         let projectSelectorP = document.createElement("p");
-
+        projectSelectorP.classList.add("input-field");
         let projectLabel = document.createElement("label");
         projectLabel.textContent = "Project";
         projectLabel.htmlFor = "projects-selector";
-
         let projectsSelector = document.createElement("select")
         projectsSelector.id = "projects-selector";
         projectsSelector.setAttribute("name", "projects-selector");
-
         projectsView.childNodes.forEach( (node) => { 
             if (node.firstChild !== null) {
                 let option = document.createElement("option");
@@ -311,7 +320,7 @@ const createDom = () => {
         let button = document.createElement("button");
         button.classList.add("delete");
         button.dataset.todoId = toDo.getId();
-        button.textContent = "Delete";
+        button.textContent = deleteSymbol;
 
         let checkBox = document.createElement("input");
         checkBox.type = "checkbox";
@@ -322,6 +331,7 @@ const createDom = () => {
         div.append(checkBox, title, dueTo, button);
         return div;
     }
+
 
     /****  Populate projects view ****/
 
@@ -384,7 +394,7 @@ const createDom = () => {
         title.classList.add("project");
         title.dataset.projectId = project.getId();
 
-        deleteButton.textContent = "X";
+        deleteButton.textContent = deleteSymbol;
         deleteButton.classList.add("delete-project");
         deleteButton.dataset.projectId = project.getId();
 
