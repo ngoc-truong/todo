@@ -122,3 +122,7 @@ time {
 .to-do {
     cursor: pointer;
 }
+
+.checked {
+    background-color: rosybrown;
+}

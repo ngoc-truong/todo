@@ -33,6 +33,14 @@ const createToDo = (title, description, dueDate) => {
         description = newDescription;
     }
 
+    const toggleCheck = () => {
+        if (checked === false){
+            checked = true;
+        } else {
+            checked = false;
+        }
+    }
+
     // Object methods
     const addNote = (note) => {
         note.setToDoId(id);
@@ -52,7 +60,8 @@ const createToDo = (title, description, dueDate) => {
                 addNote, 
                 setProjectId,
                 setTitle,
-                setDescription       
+                setDescription,
+                toggleCheck      
     };
 };
 

@@ -13,6 +13,37 @@ const createDom = () => {
         }
     }
 
+    // Check/Uncheck a todo
+    const checkToDo = (dataManager) => {
+        const checkBoxes = document.querySelectorAll("input[type=checkbox]");
+
+        checkBoxes.forEach( (checkbox) => {
+            checkbox.addEventListener("change", (e) => {
+                toggleCheckClass(checkbox);
+                const toDo = dataManager.findToDo(checkbox.dataset.todoId);
+                toDo.toggleCheck();
+            })
+        })
+
+        
+    }
+
+    const toggleCheckClass = (checkbox) => {
+        if (checkbox.classList.contains("unchecked")){
+            checkbox.classList.add("checked");
+            checkbox.classList.remove("unchecked");
+
+            checkbox.parentNode.classList.add("checked");
+            checkbox.parentNode.classList.remove("unchecked");
+        } else {
+            checkbox.classList.add("unchecked");
+            checkbox.classList.remove("checked");
+
+            checkbox.parentNode.classList.add("unchecked");
+            checkbox.parentNode.classList.remove("checked");
+        }
+    }
+
     // Add new note
     const addNewNote = (dataManager) => {
         const addNewNoteButton = document.querySelector("#add-note-button");
@@ -27,7 +58,7 @@ const createDom = () => {
     }
     
     // Populate a todo view
-    const showToDo = (dataManager) => {
+    const showToDoOfClickedToDo = (dataManager) => {
         const toDosDom = document.querySelectorAll(".todo-preview, .todo-preview-title, time");
 
         toDosDom.forEach( (toDoDom) => {
@@ -79,6 +110,9 @@ const createDom = () => {
         let div = createContainerForToDoListItem(toDo);
         div.classList.add("todo-header");
 
+        // Removing checkbox
+        div.removeChild(div.firstChild);
+
         let description = document.createElement("p");
         description.textContent = toDo.getDescription();
         description.classList.add("description");
@@ -118,7 +152,8 @@ const createDom = () => {
             dataManager.addToDoToProject(project, title, description, dueDate);
             resetView(toDosView);
             showPreviewsOfToDos(project);
-            showToDo(dataManager);
+            showToDoOfClickedToDo(dataManager);
+            checkToDo(dataManager);
         })
     }
 
@@ -127,20 +162,8 @@ const createDom = () => {
 
         projectsDom.forEach ( (projectDom) => {
             projectDom.addEventListener("click", (e) => {
-                // Reset views
-                resetView(toDosView);
-                resetView(toDoView);
-                resetView(addToDoForm);
-
                 let project = dataManager.findProject(e.target.dataset.projectId);
-
-                // Create new ToDo-Form and let button listen
-                addToDoForm.appendChild(createContainerForToDoForm(project));
-                addNewToDo(dataManager);
-
-                // Show todo preview items
-                showPreviewsOfToDos(project);
-                showToDo(dataManager);
+                refreshToDos(project, dataManager);
             });
         });
     };
@@ -150,6 +173,21 @@ const createDom = () => {
             let container = createContainerForToDoListItem(toDo);
             toDosView.appendChild(container);
         })
+    }
+
+    const refreshToDos = (project, dataManager) => {
+        resetView(toDosView);
+        resetView(toDoView);
+        resetView(addToDoForm);
+
+        // Create new ToDo-Form and let button listen
+        addToDoForm.appendChild(createContainerForToDoForm(project));
+        addNewToDo(dataManager);
+
+        // Set listeners
+        showPreviewsOfToDos(project);
+        showToDoOfClickedToDo(dataManager);
+        checkToDo(dataManager);
     }
 
     const createContainerForToDoForm = (project) => {
@@ -249,9 +287,11 @@ const createDom = () => {
         button.classList.add("delete");
         button.textContent = "Delete";
 
-        let checkBox        = document.createElement("input");
-        checkBox.type       = "checkbox";
+        let checkBox = document.createElement("input");
+        checkBox.type = "checkbox";
+        checkBox.dataset.todoId = toDo.getId();
         checkBox.classList.add("checkBox");
+        checkBox.classList.add("unchecked");
 
         div.append(checkBox, title, dueTo, button);
         return div;
@@ -263,10 +303,14 @@ const createDom = () => {
     const addNewProject = (dataManager) => {
         newProjectButton.addEventListener("click", (e) => {
             dataManager.addProjectToProjects(newProjectInput.value);
-            resetView(projectsView);
-            showProjects(dataManager.getProjects());
-            showToDosOfClickedProject(dataManager, showToDo);
+            refreshProjectsView(dataManager);
         })
+    }
+
+    const refreshProjectsView = (dataManager) => {
+        resetView(projectsView);
+        showProjects(dataManager.getProjects());
+        showToDosOfClickedProject(dataManager, showToDoOfClickedToDo);
     }
 
     const showProjects = (projects) => {
@@ -288,7 +332,7 @@ const createDom = () => {
         return container;
     }
 
-    return { showProjects, addNewProject, showToDosOfClickedProject, showToDo };
+    return { showProjects, addNewProject, showToDosOfClickedProject, showToDoOfClickedToDo };
 };
 
 export { createDom };
