@@ -67,10 +67,40 @@ const createDataManager = () => {
         toDo.addNote(note);
     }
 
+    const deleteProject = (project) => {
+        let index = projects.indexOf(project);
+        projects.splice(index, 1);
+    }
+
+    const deleteToDo = (toDo) => {
+        // Delete in toDos
+        let index = toDos.indexOf(toDo);
+        toDos.splice(index, 1);
+        
+        // Delete in Projects
+        let project = findProject(toDo.getProjectId());
+        let indexInProjects = project.getToDos().indexOf(toDo);
+        project.getToDos().splice(indexInProjects, 1);
+    }
+
+    const deleteNote = (note) => {
+        // Delete in notes
+        let index = notes.indexOf(note);
+        notes.splice(index, 1);
+
+        // Delete in ToDos
+        let toDo = findToDo(note.getToDoId());
+        let indexInToDos = toDo.getNotes().indexOf(note);
+        toDo.getNotes().splice(indexInToDos, 1);
+    }
+
     return {    createSampleData,   
                 addProjectToProjects,
                 addToDoToProject,
                 addNoteToToDo, 
+                deleteProject,
+                deleteToDo,
+                deleteNote, 
                 getProjects,
                 getToDos,
                 getNotes,

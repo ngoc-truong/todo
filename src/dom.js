@@ -24,8 +24,6 @@ const createDom = () => {
                 toDo.toggleCheck();
             })
         })
-
-        
     }
 
     const toggleCheckClass = (checkbox) => {
@@ -44,7 +42,17 @@ const createDom = () => {
         }
     }
 
-    // Add new note
+    /**** Populate a todo view ****/ 
+    const refreshToDo = (toDo, dataManager) => {
+        resetView(toDoView);
+        let containerForm = createContainerForNoteForm(toDo);
+        let containerToDo = createContainerForToDo(toDo);
+        toDoView.append(containerForm, containerToDo);
+        addNewNote(dataManager);
+        deleteNote(dataManager);
+    }
+
+    // CRUD methods
     const addNewNote = (dataManager) => {
         const addNewNoteButton = document.querySelector("#add-note-button");
         const noteInput        = document.querySelector("#note-text");
@@ -53,29 +61,33 @@ const createDom = () => {
             let text = noteInput.value;
             let toDo = dataManager.findToDo(noteInput.dataset.todoId);
             dataManager.addNoteToToDo(toDo, text);
-            refreshToDo(dataManager, toDo.getId());
+            refreshToDo(toDo, dataManager);
         })
     }
-    
-    // Populate a todo view
+
+    const deleteNote = (dataManager) => {
+        let buttons = document.querySelectorAll(".delete-note");
+
+        buttons.forEach( (button) => {
+            button.addEventListener("click", (e) => {
+                let note = dataManager.findNote(button.dataset.noteId);
+                let toDo = dataManager.findToDo(note.getToDoId());
+                dataManager.deleteNote(note);
+                refreshToDo(toDo, dataManager);
+            })
+        })
+    }
+
     const showToDoOfClickedToDo = (dataManager) => {
         const toDosDom = document.querySelectorAll(".todo-preview, .todo-preview-title, time");
 
         toDosDom.forEach( (toDoDom) => {
             toDoDom.addEventListener("click", (e) => {;
                 if(e.target !== e.currentTarget) return;
-                refreshToDo(dataManager, e.target.dataset.todoId);
+                let toDo = dataManager.findToDo(e.target.dataset.todoId);
+                refreshToDo(toDo, dataManager);
             })
         })
-    }
-
-    const refreshToDo = (dataManager, toDoId) => {
-        resetView(toDoView);
-        let toDo = dataManager.findToDo(toDoId);
-        let containerForm = createContainerForNoteForm(toDo);
-        let containerToDo = createContainerForToDo(toDo);
-        toDoView.append(containerForm, containerToDo);
-        addNewNote(dataManager);
     }
 
     const createContainerForNoteForm = (toDo) => {
@@ -124,7 +136,13 @@ const createDom = () => {
             let li = document.createElement("li");
             li.textContent = note.getText();
             li.dataset.noteId = note.getId();
-            ul.appendChild(li);
+
+            let button = document.createElement("button");
+            button.textContent = "Delete note";
+            button.classList.add("delete-note");
+            button.dataset.noteId = note.getId();
+
+            ul.append(li, button);
         })
 
         container.append(div, description, ul);
@@ -132,9 +150,44 @@ const createDom = () => {
     }
 
 
-    // Populate a project's todos preview
+    /****  Populate a project's todos preview ****/
 
-    // Adding new ToDo
+    // Refresh methods
+    const refreshToDos = (project, dataManager) => {
+        resetView(addToDoForm);
+        // Create new ToDo-Form and let button listen
+        addToDoForm.appendChild(createContainerForToDoForm(project));
+        addNewToDo(dataManager);
+
+        // Set listeners
+        refreshToDosWithoutAdd(project, dataManager);
+    };
+
+    const refreshToDosWithoutAdd = (project, dataManager) => {
+        resetView(toDosView);
+        resetView(toDoView);
+        
+        showPreviewsOfToDos(project);
+        showToDoOfClickedToDo(dataManager);
+        checkToDo(dataManager);
+        deleteToDo(dataManager);
+    };
+
+    // Manipulating methods
+    const deleteToDo = (dataManager) => {
+        let buttons = document.querySelectorAll(".delete");
+
+        buttons.forEach( (button) => {
+            button.addEventListener("click", (e) => {
+                console.log("moin");
+                let toDo = dataManager.findToDo(button.dataset.todoId);
+                let project = dataManager.findProject(toDo.getProjectId());
+                dataManager.deleteToDo(toDo);
+                refreshToDosWithoutAdd(project, dataManager);
+            })
+        })
+    }
+
     const addNewToDo = (dataManager) => {
         const addToDoButton     = document.querySelector("#add-todo-button");
         const titleInput        = document.querySelector("#todo-title");
@@ -150,23 +203,9 @@ const createDom = () => {
             const project = dataManager.findProject(projectId);
 
             dataManager.addToDoToProject(project, title, description, dueDate);
-            resetView(toDosView);
-            showPreviewsOfToDos(project);
-            showToDoOfClickedToDo(dataManager);
-            checkToDo(dataManager);
+            refreshToDosWithoutAdd(project, dataManager);
         })
     }
-
-    const showToDosOfClickedProject = (dataManager) => {
-        const projectsDom = document.querySelectorAll(".project");
-
-        projectsDom.forEach ( (projectDom) => {
-            projectDom.addEventListener("click", (e) => {
-                let project = dataManager.findProject(e.target.dataset.projectId);
-                refreshToDos(project, dataManager);
-            });
-        });
-    };
 
     const showPreviewsOfToDos = (project) => {
         project.getToDos().forEach( (toDo) => {
@@ -175,21 +214,7 @@ const createDom = () => {
         })
     }
 
-    const refreshToDos = (project, dataManager) => {
-        resetView(toDosView);
-        resetView(toDoView);
-        resetView(addToDoForm);
-
-        // Create new ToDo-Form and let button listen
-        addToDoForm.appendChild(createContainerForToDoForm(project));
-        addNewToDo(dataManager);
-
-        // Set listeners
-        showPreviewsOfToDos(project);
-        showToDoOfClickedToDo(dataManager);
-        checkToDo(dataManager);
-    }
-
+    // Dom creation
     const createContainerForToDoForm = (project) => {
         // ToDo-Title input field
         let titleP = document.createElement("p");
@@ -244,7 +269,7 @@ const createDom = () => {
         projectsView.childNodes.forEach( (node) => { 
             if (node.firstChild !== null) {
                 let option = document.createElement("option");
-                option.value = node.textContent;
+                option.value = node.firstChild.textContent;
                 option.dataset.projectId = node.firstChild.dataset.projectId;
                 option.textContent = option.value;
 
@@ -285,6 +310,7 @@ const createDom = () => {
         
         let button = document.createElement("button");
         button.classList.add("delete");
+        button.dataset.todoId = toDo.getId();
         button.textContent = "Delete";
 
         let checkBox = document.createElement("input");
@@ -297,19 +323,19 @@ const createDom = () => {
         return div;
     }
 
-    // Populate projects view
+    /****  Populate projects view ****/
 
     // Adding new project
-    const addNewProject = (dataManager) => {
-        newProjectButton.addEventListener("click", (e) => {
-            dataManager.addProjectToProjects(newProjectInput.value);
-            refreshProjectsView(dataManager);
-        })
+    const refreshProjectsView = (dataManager) => {
+        refreshWithoutAdd(dataManager);
+        // Bug: Should not be called after add and delete? But why?
+        addNewProject(dataManager);
     }
 
-    const refreshProjectsView = (dataManager) => {
+    const refreshWithoutAdd = (dataManager) => {
         resetView(projectsView);
         showProjects(dataManager.getProjects());
+        deleteProject(dataManager);
         showToDosOfClickedProject(dataManager, showToDoOfClickedToDo);
     }
 
@@ -319,20 +345,60 @@ const createDom = () => {
         })
     }
 
+    const showToDosOfClickedProject = (dataManager) => {
+        const projectsDom = document.querySelectorAll(".project");
+
+        projectsDom.forEach ( (projectDom) => {
+            projectDom.addEventListener("click", (e) => {
+                let project = dataManager.findProject(e.target.dataset.projectId);
+                refreshToDos(project, dataManager);
+            });
+        });
+    };
+
+    const addNewProject = (dataManager) => {
+        newProjectButton.addEventListener("click", (e) => {
+            dataManager.addProjectToProjects(newProjectInput.value);
+            refreshWithoutAdd(dataManager);
+        })
+    }
+
+    const deleteProject = (dataManager) => {
+        const buttons = document.querySelectorAll(".delete-project");
+
+        buttons.forEach((button) => {
+            button.addEventListener("click", (e) => {
+                let project = dataManager.findProject(button.dataset.projectId);
+                dataManager.deleteProject(project);
+                refreshWithoutAdd(dataManager);
+            })
+        })
+    }
+
     const createContainerForProject = (project) => {
-        const container = document.createElement("div");
-        const title     = document.createElement("h3");
+        const container     = document.createElement("div");
+        const title         = document.createElement("h3");
+        const deleteButton  = document.createElement("button");
         
         title.textContent = project.getTitle();         
         title.classList.add("project");
         title.dataset.projectId = project.getId();
+
+        deleteButton.textContent = "X";
+        deleteButton.classList.add("delete-project");
+        deleteButton.dataset.projectId = project.getId();
+
         container.classList.add("project-left");
         
-        container.appendChild(title);
+        container.append(title, deleteButton);
         return container;
     }
 
-    return { showProjects, addNewProject, showToDosOfClickedProject, showToDoOfClickedToDo };
+    return {    showProjects, 
+                addNewProject, 
+                refreshProjectsView,
+                showToDosOfClickedProject, 
+                showToDoOfClickedToDo };
 };
 
 export { createDom };
